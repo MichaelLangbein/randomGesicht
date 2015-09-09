@@ -5,13 +5,13 @@ import sys
 
 class Gesicht():
     
-    optsGesicht = {'Form': ['Viereck', 'Ball', 'Träne', 'Pizza', 'Erdnuss', 'Pyramide'],
+    optsGesicht = {'Form': ['Viereck', 'Ball', 'Träne', 'Pizza', 'Erdnuss', 'Pyramide', 'Birne', 'Glühbirne'],
            'Gewicht': ['Über', 'Unter', 'Mitte'],
            'Augen': ['V', 'A', 'Horizontal'],
            'Kiefer' : ['Weich', 'Markant']}
 
     optsRandvw = {'Geschlecht': ['Frau', 'Mann'],
-                  'Gefühl': ['Froh', 'Überrascht', 'Wütend', 'Flirty'],
+                  'Gefühl': ['Froh', 'Überrascht', 'Wütend', 'Flirty', 'Entschlossen', 'Friedlich', 'Jammernd'],
                   'Blickrichtung': ['O', 'OR', 'R', 'UR', 'U', 'UL', 'L', 'OL']}
 
     auswahl = {}
