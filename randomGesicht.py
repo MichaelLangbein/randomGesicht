@@ -26,19 +26,25 @@ class Gesicht():
             rn = random.randrange(0,len(werte)-1)
             self.auswahl[opt] = werte[rn]
 
+redraw = ''
 
 if __name__ == "__main__":
     while 1:
 
         text = "Willkommen zu Michaels Gesichter-Trainer!"
         auswahl = ['Neues Gesicht', 'Beenden']
-        redraw = easygui.buttonbox(text, choices = auswahl)
+
+        if redraw == '':
+            redraw = easygui.buttonbox(text, choices = auswahl)
         
         if redraw == 'Neues Gesicht':
             anna = Gesicht()
-            text += "Anna erzeugt!"    
+            text += "\n Anna erzeugt!"
+            for opt, wert in anna.auswahl.iteritems():
+                text += "\n %s : %s" % (opt, wert)
             redraw = easygui.buttonbox(text, choices = auswahl)
 
         if redraw == 'Beenden':
             sys.exit(0)
+            
         
