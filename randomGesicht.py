@@ -1,3 +1,4 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 import random
 import easygui
@@ -8,7 +9,9 @@ class Gesicht():
     optsGesicht = {'Form': ['Viereck', 'Ball', 'Träne', 'Pizza', 'Erdnuss', 'Pyramide', 'Birne', 'Glühbirne'],
            'Gewicht': ['Über', 'Unter', 'Mitte'],
            'Augen': ['V', 'A', 'Horizontal'],
-           'Kiefer' : ['Weich', 'Markant']}
+           'Kiefer' : ['Weich', 'Markant'], 
+           'Nase' : ['Stups', 'Haken', 'Breit', 'Fein'],
+           'Lippen' : ['Voll', 'Dünn']}
 
     optsRandvw = {'Geschlecht': ['Frau', 'Mann'],
                   'Gefühl': ['Froh', 'Überrascht', 'Wütend', 'Flirty', 'Entschlossen', 'Friedlich', 'Jammernd'],
