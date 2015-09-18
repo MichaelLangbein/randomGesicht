@@ -11,7 +11,10 @@ class Gesicht():
            'Augen': ['V', 'A', 'Horizontal'],
            'Kiefer' : ['Weich', 'Markant'], 
            'Nase' : ['Stups', 'Haken', 'Breit', 'Fein'],
-           'Lippen' : ['Voll', 'Dünn']}
+           'Lippen' : ['Voll', 'Dünn'],
+           'Augenbrauen' : ['Dick', 'Dünn', 'Hakig'],
+           'Haare-Faltpunkt' : ['Stirn, seitlich', 'Stirn, mitte', 'Hinterkopf', 'Seite, tief'],
+           'Haare-Pony' : ['Straigth nach unten', 'Buschig nach unten', 'Seitlich konvex', 'Seitlich konkav', 'Mittig, doppelt konkav', 'Straight zurück']}
 
     optsRandvw = {'Geschlecht': ['Frau', 'Mann'],
                   'Gefühl': ['Froh', 'Überrascht', 'Wütend', 'Flirty', 'Entschlossen', 'Friedlich', 'Jammernd'],
