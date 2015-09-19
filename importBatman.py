@@ -4,14 +4,13 @@ import sys
 import skimage.io as io
 from skimage.color import rgb2grey
 from skimage.exposure import equalize_hist
-from skimage.filters import gaussian_filter
-from skimage import measure
+from skimage.filters import gaussian_filter, threshold_otsu
 from skimage.transform import downscale_local_mean
-#from skimage.morphology import skeletonize
-#from skimage.morphology import medial_axis
+from skimage import measure
 
 import numpy as np
 import matplotlib.pyplot as plt
+import cv2
 
 
 def show_images(images,titles=None):
@@ -30,29 +29,36 @@ def show_images(images,titles=None):
     fig.set_size_inches(np.array(fig.get_size_inches()) * n_ims)
     plt.show()
 
+    
+
 def processImage(pathNname, outpname):
     # Einlesen Original
     name = pathNname
-    one = io.imread(name)
+    img = io.imread(name)
 
     # Grau, bessere Kontraste, blurren von zu viel Details
-    one_grey = rgb2grey(one)
-    one_grey = downscale_local_mean(one_grey, (2, 2))
-    one_grey = equalize_hist(one_grey)
-    one_grey = gaussian_filter(one_grey, sigma=1)
+    img_grey = rgb2grey(img)
+    img_grey = downscale_local_mean(img_grey, (2, 2))
+    img_grey = equalize_hist(img_grey)
+    img_grey = gaussian_filter(img_grey, sigma=1)
 
     # Schw5arz/Weiß auf basis von Threshold
-    one_bin = np.where(one_grey > np.mean(one_grey)- 1.3*np.var(one_grey)**0.5, 1, 0)
+    thresh = threshold_otsu(img_grey)
+    img_bin = img_grey > thresh
+    
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+    eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 
-    # Ecken entdecken
-    #contours = measure.find_contours(one_bin, 0.5)
-    #skeleton = skeletonize(one_bin)
-    #skeleton = medial_axis(one_bin)
+    faces = face_cascade.detectMultiScale(img, 1, 5)
+    img_det = img_bin
+    for (x,y,w,h) in faces:
+        img_det = cv2.rectangle(img_det, (x,y), (x+w, y+h), (255, 0, 0), 2)
 
-    #show_images([one, one_grey, one_bin],['Original', 'Grau, Hist-eq und Blur', 'Binary, Threshold'])
+    img_crop = img_bin[y:y+h, x:x+w]
 
+    show_images([img, img_grey, img_bin, img_det, img_crop],
+                ['Original', 'smll/Hist/Gauss', 'Bin', 'CV', 'Final'])
     io.imsave(outpname, one_bin, 'simpleitk')
-
 
 
 if __name__ == '__main__':
@@ -69,4 +75,7 @@ if __name__ == '__main__':
         
     processImage(pathNname, outpname)
         
+
+
+
 
