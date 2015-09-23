@@ -3,6 +3,11 @@
 import random
 import easygui
 import sys
+import MYSQLdb as mdb
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+
 
 class Gesicht():
     
@@ -32,13 +37,31 @@ class Gesicht():
             rn = random.randrange(0,len(werte)-1)
             self.auswahl[opt] = werte[rn]
 
+
+
+def preprocess(imgname):
+    img = cv2.imread(imgname)
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img_blur = cv2.GaussianBlur(img_gray,(5,5),0)
+    img_hist = img_blur #cv2.equalizeHist(img_blur)
+    (thrshld, img_thr) = cv2.threshold(img_hist,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+    return img_thr
+
+def saveImg(img_arr, anna):
+    sql = "INSERT INTO rgtable () VALUES ()"
+    cur.execute(sql)
+
+
 redraw = ''
+path = "/home/michael/codes/python_codes/randomGesicht/bilder/"
+con = mbd.connect('localhost', 'root', 'rinso86', 'rgdb')
+cur = con.cursor()
 
 if __name__ == "__main__":
     while 1:
 
         text = "Willkommen zu Michaels Gesichter-Trainer!"
-        auswahl = ['Neues Gesicht', 'Beenden']
+        auswahl = ['Neues Gesicht', 'Hochladen', 'Beenden']
 
         if redraw == '':
             redraw = easygui.buttonbox(text, choices = auswahl)
@@ -49,6 +72,13 @@ if __name__ == "__main__":
             for opt, wert in anna.auswahl.iteritems():
                 text += "\n %s : %s" % (opt, wert)
             redraw = easygui.buttonbox(text, choices = auswahl)
+
+        if redraw == 'Hochladen':
+            msg = "Bitte lade das Bild hoch!"
+            title = "Bild auswählen"
+            imgname = easygui.fileopenbox(msg, title, default='*', filetypes"*.jpg", multiple=False)
+            img_arr = preprocess(imgname)
+            saveImg(img_arr, anna)
 
         if redraw == 'Beenden':
             sys.exit(0)

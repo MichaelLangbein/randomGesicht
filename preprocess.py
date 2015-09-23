@@ -1,3 +1,4 @@
+import MYSQLdb as mdb
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
@@ -29,9 +30,26 @@ def preprocess(imgname):
     img_hist = img_blur #cv2.equalizeHist(img_blur)
     (thrshld, img_thr) = cv2.threshold(img_hist,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
-    # Haar cascades funktionieren nicht - brauchen eigenes Trainings-xml.
-    #face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-    #faces = face_cascade.detectMultiScale(img, 1.3, 5)
+#    faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+#    faces = faceCascade.detectMultiScale(
+#        img_gray,
+#        scaleFactor=1.1,
+#        minNeighbors=5,
+#        minSize=(30, 30),
+#        flags = cv2.cv.CV_HAAR_SCALE_IMAGE
+#    )
 
     show_images([img, img_blur, img_hist, img_thr],['Orig', 'Blur', 'Hist', 'Thresh'])
     cv2.imwrite(path + 'prepr_' + imgname, img_thr)
+    return img_thr
+
+def importImage(imgname):
+
+    try:
+        con = mbd.connect('localhost', 'root', 'rinso86', 'rgdb')
+        cur = con.cursor()
+    except mdb.Error, e:
+        print "Error %d: %s" % (e.args[0], e.args[1])
+        
+    imgarr = preprocess(imgname)
+    
