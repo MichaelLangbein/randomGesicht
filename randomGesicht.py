@@ -3,10 +3,24 @@
 import random
 import easygui
 import sys
-import MYSQLdb as mdb
+import sqlite3
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+
+def adapt_array(arr):
+    """
+    http://stackoverflow.com/a/31312102/190597 (SoulNibbler)
+    """
+    out = io.BytesIO()
+    np.save(out, arr)
+    out.seek(0)
+    return sqlite3.Binary(out.read())
+
+def convert_array(text):
+    out = io.BytesIO(text)
+    out.seek(0)
+    return np.load(out)
 
 
 class Gesicht():
@@ -54,7 +68,7 @@ def saveImg(img_arr, anna):
 
 redraw = ''
 path = "/home/michael/codes/python_codes/randomGesicht/bilder/"
-con = mbd.connect('localhost', 'root', 'rinso86', 'rgdb')
+con = sqlite3.connect('localhost', 'root', 'rinso86', 'rgdb')
 cur = con.cursor()
 
 if __name__ == "__main__":
