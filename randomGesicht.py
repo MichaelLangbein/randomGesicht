@@ -23,6 +23,19 @@ def convert_array(text):
     return np.load(out)
 
 
+# Converts np.array to TEXT when inserting
+sqlite3.register_adapter(np.ndarray, adapt_array)
+
+# Converts TEXT to np.array when selecting
+sqlite3.register_converter("array", convert_array)
+
+x = np.arange(12).reshape(2,6)
+
+con = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
+cur = con.cursor()
+cur.execute("create table test (arr array)")
+
+
 class Gesicht():
     
     optsGesicht = {'Form': ['Viereck', 'Ball', 'Träne', 'Pizza', 'Erdnuss', 'Pyramide', 'Birne', 'Glühbirne'],
