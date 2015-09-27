@@ -6,35 +6,7 @@ import sys
 import sqlite3
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
-
-def adapt_array(arr):
-    """
-    http://stackoverflow.com/a/31312102/190597 (SoulNibbler)
-    """
-    out = io.BytesIO()
-    np.save(out, arr)
-    out.seek(0)
-    return sqlite3.Binary(out.read())
-
-def convert_array(text):
-    out = io.BytesIO(text)
-    out.seek(0)
-    return np.load(out)
-
-
-# Converts np.array to TEXT when inserting
-sqlite3.register_adapter(np.ndarray, adapt_array)
-
-# Converts TEXT to np.array when selecting
-sqlite3.register_converter("array", convert_array)
-
-x = np.arange(12).reshape(2,6)
-
-con = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
-cur = con.cursor()
-cur.execute("create table test (arr array)")
-
+import json
 
 class Gesicht():
     
@@ -45,11 +17,11 @@ class Gesicht():
            'Nase' : ['Stups', 'Haken', 'Breit', 'Fein'],
            'Lippen' : ['Voll', 'Dünn'],
            'Augenbrauen' : ['Dick', 'Dünn', 'Hakig'],
-           'Haare-Faltpunkt' : ['Stirn, seitlich', 'Stirn, mitte', 'Hinterkopf', 'Seite, tief'],
-           'Haare-Pony' : ['Straigth nach unten', 'Buschig nach unten', 'Seitlich konvex', 'Seitlich konkav', 'Mittig, doppelt konkav', 'Straight zurück']}
+           'Haare_Faltpunkt' : ['Stirn, seitlich', 'Stirn, mitte', 'Hinterkopf', 'Seite, tief'],
+           'Haare_Pony' : ['Straigth nach unten', 'Buschig nach unten', 'Seitlich konvex', 'Seitlich konkav', 'Mittig, doppelt konkav', 'Straight zurück']}
 
     optsRandvw = {'Geschlecht': ['Frau', 'Mann'],
-                  'Gefühl': ['Froh', 'Überrascht', 'Wütend', 'Flirty', 'Entschlossen', 'Friedlich', 'Jammernd'],
+                  'Gefuehl': ['Froh', 'Überrascht', 'Wütend', 'Flirty', 'Entschlossen', 'Friedlich', 'Jammernd'],
                   'Blickrichtung': ['O', 'OR', 'R', 'UR', 'U', 'UL', 'L', 'OL']}
 
     auswahl = {}
@@ -75,14 +47,38 @@ def preprocess(imgname):
     return img_thr
 
 def saveImg(img_arr, anna):
-    sql = "INSERT INTO rgtable () VALUES ()"
+
+    dic = anna.auswahl
+    dic["id"] = None
+    dic["Bild"] = json.dumps(img_arr.tolist())
+    keys = ','.join(dic.keys())
+    vals = ','.join(dic.values())
+    sql = "INSERT INTO rgtable (%s) VALUES (%s)" % (keys, vals)
     cur.execute(sql)
 
 
 redraw = ''
 path = "/home/michael/codes/python_codes/randomGesicht/bilder/"
-con = sqlite3.connect('localhost', 'root', 'rinso86', 'rgdb')
+con = sqlite3.connect('rgdb.db')
 cur = con.cursor()
+cur.execute('''CREATE TABLE IF NOT EXISTS rgtable (
+                                    id INTEGER PRIMARY KEY, 
+                                    Bild BLOB,
+                                    Form CHAR(20),
+                                    Gewicht CHAR(20),
+                                    Augen CHAR(20),
+                                    Kiefer CHAR(20),
+                                    Nase CHAR(20),
+                                    Lippen CHAR(20),
+                                    Augenbrauen CHAR(20),
+                                    Haare_Faltpunkt CHAR(50),
+                                    Haare_Pony CHAR(50),
+                                    Geschlecht CHAR(1),
+                                    Gefuehl CHAR(20),
+                                    Blickrichtung CHAR(2))''')
+
+
+
 
 if __name__ == "__main__":
     while 1:
@@ -103,7 +99,7 @@ if __name__ == "__main__":
         if redraw == 'Hochladen':
             msg = "Bitte lade das Bild hoch!"
             title = "Bild auswählen"
-            imgname = easygui.fileopenbox(msg, title, default='*', filetypes"*.jpg", multiple=False)
+            imgname = easygui.fileopenbox(msg, title, default='*', filetypes = "*.jpg", multiple=False)
             img_arr = preprocess(imgname)
             saveImg(img_arr, anna)
 
