@@ -6,7 +6,6 @@ import sys
 import sqlite3
 import cv2
 import numpy as np
-import json
 
 class Gesicht():
     
@@ -50,7 +49,7 @@ def saveImg(img_arr, anna):
 
     dic = anna.auswahl
     dic["id"] = None
-    dic["Bild"] = json.dumps(img_arr.tolist())
+    dic["Bild"] = img_arr.dumps() // Kann zurück ausgelesen werden mit numpy.loads(dmp)
     keys = ','.join(dic.keys())
     vals = ','.join(dic.values())
     sql = "INSERT INTO rgtable (%s) VALUES (%s)" % (keys, vals)
@@ -63,7 +62,7 @@ con = sqlite3.connect('rgdb.db')
 cur = con.cursor()
 cur.execute('''CREATE TABLE IF NOT EXISTS rgtable (
                                     id INTEGER PRIMARY KEY, 
-                                    Bild BLOB,
+                                    Bild text,
                                     Form CHAR(20),
                                     Gewicht CHAR(20),
                                     Augen CHAR(20),
