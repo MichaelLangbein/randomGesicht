@@ -46,14 +46,18 @@ def preprocess(imgname):
     return img_thr
 
 def saveImg(img_arr, anna):
-
     dic = anna.auswahl
     dic["id"] = None
-    dic["Bild"] = img_arr.dumps() // Kann zurück ausgelesen werden mit numpy.loads(dmp)
+    dic["Bild"] = img_arr.dumps()
+    #np.getbuffer(img_arr) # Kann ausgelesen werden mit np.frombuffer
+    #sqlite3.Binary(img_arr)  # Kann ausgelesen werden mit 
+    #img_arr.dumps() # Kann zurück ausgelesen werden mit numpy.loads(dmp)
     keys = ','.join(dic.keys())
     vals = ','.join(dic.values())
     sql = "INSERT INTO rgtable (%s) VALUES (%s)" % (keys, vals)
     cur.execute(sql)
+    
+    
 
 
 redraw = ''
