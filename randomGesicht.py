@@ -45,28 +45,31 @@ def preprocess(imgname):
     (thrshld, img_thr) = cv2.threshold(img_hist,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     return img_thr
 
-def saveImg(img_arr, anna):
-    dic = anna.auswahl
-    dic["id"] = None
-    dic["Bild"] = img_arr.dumps()
-    #np.getbuffer(img_arr) # Kann ausgelesen werden mit np.frombuffer
-    #sqlite3.Binary(img_arr)  # Kann ausgelesen werden mit 
-    #img_arr.dumps() # Kann zurück ausgelesen werden mit numpy.loads(dmp)
-    keys = ','.join(dic.keys())
-    vals = ','.join(dic.values())
-    sql = "INSERT INTO rgtable (%s) VALUES (%s)" % (keys, vals)
-    cur.execute(sql)
-    
-    
+def saveImg(img_arr, anna, imgpath):
+    # Teil 1: Speichere Bild
+    imgonly = imgpath.split("/")[-1]
+    newimgpath = pathout + imgonly
+    cv2.imwrite(newimgpath, img_arr)
 
+    #Teil 2: Speichere link und Infos in Datenbank
+    dic = anna.auswahl
+    dic["Bildpath"] = newimgpath
+    keys =  '\'' +  '\', \''.join(dic.keys())    + '\''
+    vals =   '\'' + '\', \''.join(dic.values())  + '\''
+    sql = "INSERT INTO rgtable (%s) VALUES (%s)" % (keys, vals)
+    with con:
+        cur = con.cursor()
+        cur.execute(sql)
+    
 
 redraw = ''
-path = "/home/michael/codes/python_codes/randomGesicht/bilder/"
+pathout = "/home/michael/codes/python_codes/randomGesicht/bilderVerarbeitet/"
 con = sqlite3.connect('rgdb.db')
-cur = con.cursor()
-cur.execute('''CREATE TABLE IF NOT EXISTS rgtable (
-                                    id INTEGER PRIMARY KEY, 
-                                    Bild text,
+with con:
+    cur = con.cursor()
+    cur.execute('''CREATE TABLE IF NOT EXISTS rgtable (
+                                    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                    Bildpath CHAR(150),
                                     Form CHAR(20),
                                     Gewicht CHAR(20),
                                     Augen CHAR(20),
@@ -79,7 +82,6 @@ cur.execute('''CREATE TABLE IF NOT EXISTS rgtable (
                                     Geschlecht CHAR(1),
                                     Gefuehl CHAR(20),
                                     Blickrichtung CHAR(2))''')
-
 
 
 
@@ -102,11 +104,13 @@ if __name__ == "__main__":
         if redraw == 'Hochladen':
             msg = "Bitte lade das Bild hoch!"
             title = "Bild auswählen"
-            imgname = easygui.fileopenbox(msg, title, default='*', filetypes = "*.jpg", multiple=False)
-            img_arr = preprocess(imgname)
-            saveImg(img_arr, anna)
+            imgpath = easygui.fileopenbox(msg, title, default='*', filetypes = "*.jpg", multiple=False)
+            img_arr = preprocess(imgpath)
+            saveImg(img_arr, anna, imgpath)
+            redraw = easygui.buttonbox('Bild hochgeladen.', choices = auswahl)
 
         if redraw == 'Beenden':
+            con.close()
             sys.exit(0)
             
         
