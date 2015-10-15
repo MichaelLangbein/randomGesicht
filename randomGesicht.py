@@ -28,11 +28,11 @@ class Gesicht():
     def __init__(self):
         
         for opt, werte in self.optsGesicht.iteritems():
-            rn = random.randrange(0,len(werte)-1)
+            rn = random.randrange(0,len(werte))
             self.auswahl[opt] = werte[rn]
 
         for opt, werte in self.optsRandvw.iteritems():
-            rn = random.randrange(0,len(werte)-1)
+            rn = random.randrange(0,len(werte))
             self.auswahl[opt] = werte[rn]
 
 
